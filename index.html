@@ -1,0 +1,888 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quiz Thái Lan 🇹🇭</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    background: linear-gradient(135deg, #ffe8ec, #fff6f7);
+}
+
+.game {
+    width: 100%;
+    max-width: 700px;
+    background: white;
+    border-radius: 25px;
+    padding: 30px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+}
+
+h1 {
+    text-align: center;
+    color: #c91832;
+    margin-bottom: 5px;
+}
+
+.subtitle {
+    text-align: center;
+    color: #777;
+    margin-bottom: 25px;
+}
+
+.top {
+    display: flex;
+    justify-content: space-between;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.progress {
+    width: 100%;
+    height: 10px;
+    background: #f5dfe3;
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 25px;
+}
+
+.progress-bar {
+    height: 100%;
+    width: 0%;
+    background: #d82036;
+    transition: 0.3s;
+}
+
+.category {
+    text-align: center;
+    color: #d82036;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.question {
+    font-size: 23px;
+    line-height: 1.4;
+    margin-bottom: 20px;
+}
+
+.answer {
+    width: 100%;
+    padding: 15px;
+    margin: 7px 0;
+    border: 2px solid #efd9dc;
+    border-radius: 13px;
+    background: white;
+    text-align: left;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.answer:hover:not(:disabled) {
+    background: #fff1f3;
+    border-color: #d82036;
+}
+
+.answer.correct {
+    background: #dff5e7;
+    border-color: #42a86b;
+    color: #12623a;
+}
+
+.answer.wrong {
+    background: #ffe1e5;
+    border-color: #e05263;
+    color: #952637;
+}
+
+.feedback {
+    min-height: 45px;
+    margin-top: 15px;
+    padding: 12px;
+    border-radius: 12px;
+    font-weight: bold;
+}
+
+.feedback.correct {
+    background: #e9f8ef;
+    color: #12623a;
+}
+
+.feedback.wrong {
+    background: #fff0f2;
+    color: #9a293a;
+}
+
+button.next,
+button.restart {
+    display: none;
+    margin: 18px auto 0;
+    padding: 13px 24px;
+    border: none;
+    border-radius: 12px;
+    background: #d82036;
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+button.next:hover,
+button.restart:hover {
+    background: #b4162a;
+}
+
+.result {
+    text-align: center;
+}
+
+.result h2 {
+    color: #c91832;
+    font-size: 30px;
+}
+
+.result-score {
+    font-size: 25px;
+    font-weight: bold;
+    color: #c91832;
+}
+
+.hidden {
+    display: none;
+}
+</style>
+</head>
+
+<body>
+
+<div class="game">
+
+    <h1>🇹🇭 QUIZ THÁI LAN 🇹🇭</h1>
+
+    <p class="subtitle">
+        Văn hóa • Ẩm thực • Địa lí • Lễ hội
+    </p>
+
+    <div id="quiz">
+
+        <div class="top">
+            <span id="number">Câu 1 / 12</span>
+            <span>⭐ <span id="score">0</span>/12</span>
+        </div>
+
+        <div class="progress">
+            <div id="progress" class="progress-bar"></div>
+        </div>
+
+        <div id="category" class="category"></div>
+
+        <h2 id="question" class="question"></h2>
+
+        <div id="answers"></div>
+
+        <div id="feedback" class="feedback"></div>
+
+        <button id="next" class="next">
+            Câu tiếp theo ➜
+        </button>
+
+    </div>
+
+    <div id="result" class="result hidden">
+
+        <h2>🎊 Hoàn thành rồi! 🎊</h2>
+
+        <p class="result-score">
+            Bạn đạt <span id="finalScore">0</span>/12 điểm
+        </p>
+
+        <p id="resultMessage"></p>
+
+        <button id="restart" class="restart">
+            🔄 Chơi lại
+        </button>
+
+    </div>
+
+</div>
+
+
+<script>
+
+const questions = [
+
+    {
+        category: "🌏 VỊ TRÍ ĐỊA LÍ",
+        question: "Thái Lan nằm ở khu vực nào của châu Á?",
+        answers: [
+            "Đông Á",
+            "Đông Nam Á",
+            "Nam Á",
+            "Tây Á"
+        ],
+        correct: 1
+    },
+
+    {
+        category: "🌏 VỊ TRÍ ĐỊA LÍ",
+        question: "Thủ đô của Thái Lan là thành phố nào?",
+        answers: [
+            "Chiang Mai",
+            "Bangkok",
+            "Phuket",
+            "Pattaya"
+        ],
+        correct: 1
+    },
+
+    {
+        category: "🌏 VỊ TRÍ ĐỊA LÍ",
+        question: "Con sông quan trọng chảy qua Bangkok là sông nào?",
+        answers: [
+            "Sông Hồng",
+            "Sông Mê Kông",
+            "Sông Chao Phraya",
+            "Sông Hằng"
+        ],
+        correct: 2
+    },
+
+    {
+        category: "🍜 ẨM THỰC",
+        question: "Món nào sau đây là món ăn nổi tiếng của Thái Lan?",
+        answers: [
+            "Pad Thai",
+            "Sushi",
+            "Kimchi",
+            "Pizza"
+        ],
+        correct: 0
+    },
+
+    {
+        category: "🍜 ẨM THỰC",
+        question: "Tom Yum là món gì trong ẩm thực Thái Lan?",
+        answers: [
+            "Một loại bánh ngọt",
+            "Một món canh chua cay",
+            "Một loại trà",
+            "Một món cơm chiên"
+        ],
+        correct: 1
+    },
+
+    {
+        category: "🍜 ẨM THỰC",
+        question: "Xôi xoài là món tráng miệng thường dùng với loại quả nào?",
+        answers: [
+            "Chuối",
+            "Xoài",
+            "Dứa",
+            "Dâu tây"
+        ],
+        correct: 1
+    },
+
+    {
+        category: "🏯 VĂN HÓA",
+        question: "Tôn giáo có ảnh hưởng lớn đến đời sống văn hóa Thái Lan là gì?",
+        answers: [
+            "Thiên Chúa giáo",
+            "Phật giáo",
+            "Hồi giáo",
+            "Ấn Độ giáo"
+        ],
+        correct: 1
+    },
+
+    {
+        category: "🏯 VĂN HÓA",
+        question: "Điệu múa cổ điển nổi tiếng của Thái Lan thường được gọi là gì?",
+        answers: [
+            "Múa Khon",
+            "Múa lân",
+            "Flamenco",
+            "Ballet"
+        ],
+        correct: 0
+    },
+
+    {
+        category: "🏯 VĂN HÓA",
+        question: "Hình ảnh con vật nào là biểu tượng quan trọng trong văn hóa Thái Lan?",
+        answers: [
+            "Gấu trúc",
+            "Voi",
+            "Kangaroo",
+            "Chim cánh cụt"
+        ],
+        correct: 1
+    },
+
+    {
+        category: "🎉 LỄ HỘI",
+        question: "Lễ hội té nước mừng năm mới truyền thống của Thái Lan có tên là gì?",
+        answers: [
+            "Loy Krathong",
+            "Songkran",
+            "Yi Peng",
+            "Vesak"
+        ],
+        correct: 1
+    },
+
+    {
+        category: "🎉 LỄ HỘI",
+        question: "Trong lễ hội Loy Krathong, người dân thường thả gì xuống sông?",
+        answers: [
+            "Diều giấy",
+            "Đèn/hoa đăng nhỏ",
+            "Hoa giấy",
+            "Đèn lồng bay"
+        ],
+        correct: 1
+    },
+
+    {
+        category: "🎉 LỄ HỘI",
+        question: "Songkran thường được tổ chức vào thời điểm nào?",
+        answers: [
+            "Tháng 1",
+            "Tháng 4",
+            "Tháng 8",
+            "Tháng 12"
+        ],
+        correct: 1
+    }
+
+];
+
+
+let current = 0;
+let score = 0;
+let answered = false;
+
+
+function showQuestion() {
+
+    const q = questions[current];
+
+    answered = false;
+
+    document.getElementById("number").innerText =
+        "Câu " + (current + 1) + " / " + questions.length;
+
+    document.getElementById("score").innerText = score;
+
+    document.getElementById("progress").style.width =
+        ((current + 1) / questions.length * 100) + "%";
+
+    document.getElementById("category").innerText =
+        q.category;
+
+    document.getElementById("question").innerText =
+        q.question;
+
+    const answersDiv =
+        document.getElementById("answers");
+
+    answersDiv.innerHTML = "";
+
+    document.getElementById("feedback").innerText = "";
+
+    document.getElementById("feedback").className =
+        "feedback";
+
+    document.getElementById("next").style.display =
+        "none";
+
+
+    q.answers.forEach((answer, index) => {
+
+        const button =
+            document.createElement("button");
+
+        button.className = "answer";
+
+        button.innerText =
+            String.fromCharCode(65 + index) + ". " + answer;
+
+        button.onclick = function () {
+            selectAnswer(button, index);
+        };
+
+        answersDiv.appendChild(button);
+
+    });
+}
+
+
+function selectAnswer(button, index) {
+
+    if (answered) return;
+
+    answered = true;
+
+    const q = questions[current];
+
+    const buttons =
+        document.querySelectorAll(".answer");
+
+    buttons.forEach(btn => {
+        btn.disabled = true;
+    });
+
+
+    // Đánh dấu đáp án đúng
+    buttons[q.correct].classList.add("correct");
+
+
+    if (index === q.correct) {
+
+        score++;
+
+        document.getElementById("score").innerText =
+            score;
+
+        document.getElementById("feedback").innerText =
+            "✓ Chính xác! +1 điểm 🎉";
+
+        document.getElementById("feedback").className =
+            "feedback correct";
+
+    } else {
+
+        button.classList.add("wrong");
+
+        document.getElementById("feedback").innerText =
+            "✦ Chưa đúng! Đáp án đúng đã được đánh dấu màu xanh.";
+
+        document.getElementById("feedback").className =
+            "feedback wrong";
+    }
+
+
+    document.getElementById("next").style.display =
+        "block";
+}
+
+
+document.getElementById("next").onclick =
+function () {
+
+    if (!answered) return;
+
+    if (current < questions.length - 1) {
+
+        current++;
+
+        showQuestion();
+
+    } else {
+
+        showResult();
+
+    }
+};
+
+
+function showResult() {
+
+    document.getElementById("quiz")
+        .classList.add("hidden");
+
+    document.getElementById("result")
+        .classList.remove("hidden");
+
+    document.getElementById("finalScore").innerText =
+        score;
+
+
+    let message;
+
+
+    if (score === 12) {
+
+        message =
+            "🏆 Xuất sắc! Bạn là chuyên gia về Thái Lan!";
+
+    } else if (score >= 9) {
+
+        message =
+            "🌟 Rất giỏi! Bạn biết rất nhiều điều thú vị về Thái Lan.";
+
+    } else if (score >= 6) {
+
+        message =
+            "👍 Khá tốt! Hãy tìm hiểu thêm về Thái Lan nhé.";
+
+    } else {
+
+        message =
+            "📚 Bạn đã hoàn thành! Chơi lại để ghi nhớ thêm nhé.";
+    }
+
+
+    document.getElementById("resultMessage").innerText =
+        message;
+
+    document.getElementById("restart").style.display =
+        "block";
+}
+
+
+document.getElementById("restart").onclick =
+function () {
+
+    current = 0;
+    score = 0;
+
+    document.getElementById("result")
+        .classList.add("hidden");
+
+    document.getElementById("quiz")
+        .classList.remove("hidden");
+
+    showQuestion();
+};
+
+
+showQuestion();
+
+</script>
+
+</body>
+</html>
+;
+}
+
+.hidden {
+    display: none;
+}
+</style>
+</head>
+
+<body>
+
+<div class="game">
+
+    <h1>🇹🇭 QUIZ THÁI LAN 🇹🇭</h1>
+
+    <p class="subtitle">
+        Văn hóa • Ẩm thực • Địa lí • Lễ hội
+    </p>
+
+    <div id="quiz">
+
+        <div class="top">
+            <span id="number">Câu 1 / 12</span>
+            <span>⭐ <span id="score">0</span>/12</span>
+        </div>
+
+        <div class="progress">
+            <div id="progress" class="progress-bar"></div>
+        </div>
+
+        <div id="category" class="category"></div>
+
+        <h2 id="question" class="question"></h2>
+
+        <div id="answers"></div>
+
+        <div id="feedback" class="feedback"></div>
+
+        <button id="next" class="next">
+            Câu tiếp theo ➜
+        </button>
+
+    </div>
+
+    <div id="result" class="result hidden">
+
+        <h2>🎊 Hoàn thành rồi! 🎊</h2>
+
+        <p class="result-score">
+            Bạn đạt <span id="finalScore">0</span>/12 điểm
+        </p>
+
+        <p id="resultMessage"></p>
+
+        <button id="restart" class="restart">
+            🔄 Chơi lại
+        </button>
+
+    </div>
+
+</div>
+
+<script>
+
+const questions = [
+    {
+        category: "🌏 VỊ TRÍ ĐỊA LÍ",
+        question: "Thái Lan nằm ở khu vực nào của châu Á?",
+        answers: ["Đông Á", "Đông Nam Á", "Nam Á", "Tây Á"],
+        correct: 1
+    },
+    {
+        category: "🌏 VỊ TRÍ ĐỊA LÍ",
+        question: "Thủ đô của Thái Lan là thành phố nào?",
+        answers: ["Chiang Mai", "Bangkok", "Phuket", "Pattaya"],
+        correct: 1
+    },
+    {
+        category: "🌏 VỊ TRÍ ĐỊA LÍ",
+        question: "Con sông quan trọng chảy qua Bangkok là sông nào?",
+        answers: ["Sông Hồng", "Sông Mê Kông", "Sông Chao Phraya", "Sông Hằng"],
+        correct: 2
+    },
+    {
+        category: "🍜 ẨM THỰC",
+        question: "Món nào sau đây là món ăn nổi tiếng của Thái Lan?",
+        answers: ["Pad Thai", "Sushi", "Kimchi", "Pizza"],
+        correct: 0
+    },
+    {
+        category: "🍜 ẨM THỰC",
+        question: "Tom Yum là món gì trong ẩm thực Thái Lan?",
+        answers: ["Một loại bánh ngọt", "Một món canh chua cay", "Một loại trà", "Một món cơm chiên"],
+        correct: 1
+    },
+    {
+        category: "🍜 ẨM THỰC",
+        question: "Xôi xoài thường dùng với loại quả nào?",
+        answers: ["Chuối", "Xoài", "Dứa", "Dâu tây"],
+        correct: 1
+    },
+    {
+        category: "🏯 VĂN HÓA",
+        question: "Tôn giáo có ảnh hưởng lớn đến văn hóa Thái Lan là gì?",
+        answers: ["Thiên Chúa giáo", "Phật giáo", "Hồi giáo", "Ấn Độ giáo"],
+        correct: 1
+    },
+    {
+        category: "🏯 VĂN HÓA",
+        question: "Hình ảnh con vật nào là biểu tượng quan trọng trong văn hóa Thái Lan?",
+        answers: ["Gấu trúc", "Voi", "Kangaroo", "Chim cánh cụt"],
+        correct: 1
+    },
+    {
+        category: "🎉 LỄ HỘI",
+        question: "Lễ hội té nước nổi tiếng của Thái Lan có tên là gì?",
+        answers: ["Loy Krathong", "Songkran", "Yi Peng", "Vesak"],
+        correct: 1
+    },
+    {
+        category: "🎉 LỄ HỘI",
+        question: "Loy Krathong nổi tiếng với hoạt động nào?",
+        answers: [
+            "Thả đèn/hoa đăng trên mặt nước",
+            "Đấu voi",
+            "Đua thuyền",
+            "Đốt pháo hoa"
+        ],
+        correct: 0
+    },
+    {
+        category: "🎉 LỄ HỘI",
+        question: "Songkran thường được tổ chức vào tháng nào?",
+        answers: ["Tháng 1", "Tháng 4", "Tháng 8", "Tháng 12"],
+        correct: 1
+    },
+    {
+        category: "🍜 ẨM THỰC",
+        question: "Món Pad Thai thường được chế biến chủ yếu từ gì?",
+        answers: ["Mì/bún gạo", "Khoai tây", "Bánh mì", "Ngô"],
+        correct: 0
+    }
+];
+
+let current = 0;
+let score = 0;
+let answered = false;
+
+function showQuestion() {
+
+    const q = questions[current];
+
+    answered = false;
+
+    document.getElementById("number").innerText =
+        "Câu " + (current + 1) + " / " + questions.length;
+
+    document.getElementById("score").innerText = score;
+
+    document.getElementById("progress").style.width =
+        ((current + 1) / questions.length * 100) + "%";
+
+    document.getElementById("category").innerText =
+        q.category;
+
+    document.getElementById("question").innerText =
+        q.question;
+
+    const answersDiv =
+        document.getElementById("answers");
+
+    answersDiv.innerHTML = "";
+
+    document.getElementById("feedback").innerText = "";
+
+    document.getElementById("feedback").className =
+        "feedback";
+
+    document.getElementById("next").style.display =
+        "none";
+
+    q.answers.forEach((answer, index) => {
+
+        const button = document.createElement("button");
+
+        button.className = "answer";
+
+        button.innerText =
+            String.fromCharCode(65 + index) + ". " + answer;
+
+        button.onclick = function () {
+            selectAnswer(button, index);
+        };
+
+        answersDiv.appendChild(button);
+    });
+}
+
+function selectAnswer(button, index) {
+
+    if (answered) return;
+
+    answered = true;
+
+    const q = questions[current];
+
+    const buttons =
+        document.querySelectorAll(".answer");
+
+    buttons.forEach(btn => {
+        btn.disabled = true;
+    });
+
+    buttons[q.correct].classList.add("correct");
+
+    if (index === q.correct) {
+
+        score++;
+
+        document.getElementById("score").innerText =
+            score;
+
+        document.getElementById("feedback").innerText =
+            "✓ Chính xác! +1 điểm 🎉";
+
+        document.getElementById("feedback").className =
+            "feedback correct";
+
+    } else {
+
+        button.classList.add("wrong");
+
+        document.getElementById("feedback").innerText =
+            "✦ Chưa đúng! Đáp án đúng là màu xanh.";
+
+        document.getElementById("feedback").className =
+            "feedback wrong";
+    }
+
+    document.getElementById("next").style.display =
+        "block";
+}
+
+document.getElementById("next").onclick = function () {
+
+    if (!answered) return;
+
+    if (current < questions.length - 1) {
+
+        current++;
+
+        showQuestion();
+
+    } else {
+
+        showResult();
+    }
+};
+
+function showResult() {
+
+    document.getElementById("quiz")
+        .classList.add("hidden");
+
+    document.getElementById("result")
+        .classList.remove("hidden");
+
+    document.getElementById("finalScore").innerText =
+        score;
+
+    let message;
+
+    if (score === 12) {
+
+        message =
+            "🏆 Xuất sắc! Bạn là chuyên gia về Thái Lan!";
+
+    } else if (score >= 9) {
+
+        message =
+            "🌟 Rất giỏi! Bạn biết rất nhiều về Thái Lan.";
+
+    } else if (score >= 6) {
+
+        message =
+            "👍 Khá tốt! Hãy tìm hiểu thêm về Thái Lan nhé.";
+
+    } else {
+
+        message =
+            "📚 Hãy tìm hiểu thêm và thử lại nhé!";
+    }
+
+    document.getElementById("resultMessage").innerText =
+        message;
+
+    document.getElementById("restart").style.display =
+        "block";
+}
+
+document.getElementById("restart").onclick = function () {
+
+    current = 0;
+    score = 0;
+
+    document.getElementById("result")
+        .classList.add("hidden");
+
+    document.getElementById("quiz")
+        .classList.remove("hidden");
+
+    showQuestion();
+};
+
+showQuestion();
+
+</script>
+
+</body>
+</html
